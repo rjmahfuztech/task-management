@@ -13,3 +13,8 @@ def defaultHome(request):
 
 def show_task(request):
     return HttpResponse("This is Show task page!")
+
+def show_specific_task(request, id):
+    print("id ",id)
+    print("id type ",type(id))
+    return HttpResponse(f"this is Specific task page! id: {id}")
