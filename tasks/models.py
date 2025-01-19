@@ -1,6 +1,5 @@
 from django.db import models
 
-# many to many
 class Employee(models.Model):
     name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)

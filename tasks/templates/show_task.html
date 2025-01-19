@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static "css/output.css" %}">
+</head>
+<body>
+    <p class="border-2 p-2 rounded-md w-full mr-2"></p>
+    <ul class="p-4">
+        {% for task in tasks %}
+            <li class="font-bold">id: {{task.id}} and status: {{task.status}}</li>
+            <li class="text-lg">{{task.title}}</li>
+        {% endfor %}
+    </ul>
+    <div class="p-4 text-lg">
+        <p>{{task_specific.id}}</p>
+        <p>{{task_first.id}}</p>
+    </div>
+</body>
+</html>

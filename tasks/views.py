@@ -30,20 +30,15 @@ def create_task(request):
             form.save()
             
             return render(request, "task_form.html", {"form": form, "message":"Task Added Successful!"})
-
-            """For Django Form"""
-            # data = form.cleaned_data
-            # title = data.get('title')
-            # description = data.get('description')
-            # due_date = data.get('due_date')
-            # assigned_to = data.get('assigned_to')
-            
-            # task = Task.objects.create(title=title, description=description, due_date=due_date)
-            # for emp_id in assigned_to:
-            #     employee = Employee.objects.get(id=emp_id)
-            #     task.assigned_to.add(employee)
-            
-            # return HttpResponse("Task Added Successful!")
             
     context = {"form": form}
     return render(request, "task_form.html",context)
+
+def view_task(request):
+    # retrieve all tasks data
+    tasks = Task.objects.all()
+    # retrieve specific single data
+    task_specific = Task.objects.get(id=9)
+    # retrieve first data
+    task_first = Task.objects.first()
+    return render(request, "show_task.html", {"tasks":tasks, "task_specific":task_specific, "task_first":task_first})

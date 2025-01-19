@@ -718,6 +718,10 @@ video {
   width: 20rem;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .max-w-\[1400px\] {
   max-width: 1400px;
 }
@@ -732,10 +736,6 @@ video {
 
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.resize-none {
-  resize: none;
 }
 
 .grid-cols-4 {
@@ -957,6 +957,11 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
 }
 
 .font-bold {
