@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from tasks.forms import TaskForm,TaskModelForm
-from tasks.models import Employee,Task,TaskDetails
+from tasks.models import Employee,Task,TaskDetails,Project
 from datetime import date
-from django.db.models import Q
+from django.db.models import Q,Count
 
 def manager_dashboard(request):
     return render(request, "dashboard/manager-dashboard.html")
@@ -58,6 +58,32 @@ def view_task(request):
     # to check data available or not
     check = Task.objects.filter(status="PENDING").exists()
 
-    return render(request, "show_task.html", {"pending_task":pending_task, "due_date":due_date, "priority":priority,
-                                              "task_by_text":task_by_text, "status":status, "check":check
-                                              })
+    """Related Data Queries [Advanced (select_related and prefetch_related)]"""
+    '''(select_related) works on (ForeignKey, OneToOneField)'''
+    # tasks = Task.objects.all() # Accessing TaskDetails data using reverse relationship (bad query)
+    '''select_related on OneToOne'''
+    # select_related on Task
+    # tasks = Task.objects.select_related('details').all() # (good query)
+    # select_related on TaskDetails
+    # tasks = TaskDetails.objects.select_related('task').all() # (good query)
+    '''select_related on ForeignKey (works only one way where foreignKey is linked)'''
+    # select_related (between Task and Project)
+    # tasks = Task.objects.select_related('project').all()
+    '''(prefetch_related) works on (reverse ForeignKey, ManyToManyField)'''
+    '''ForeignKey'''
+    # between (project and task)
+    # tasks = Project.objects.prefetch_related('project_task').all()
+    '''ManyToManyField'''
+    # between (Task and Employee)
+    # prefetch_related on Task
+    # tasks = Task.objects.prefetch_related('assigned_to').all()
+    # prefetch_related on Employee (Reverse Relation)
+    tasks = Employee.objects.prefetch_related('tasks').all()
+
+    """Aggregate function query [Count,Avg,Max,Min,etc]"""
+    # Count total task
+    cnt_task = Task.objects.aggregate(total_cnt=Count('id'))
+    # Count all tasks that available in a Project using (annotate)
+    projects = Project.objects.annotate(task_cnt=Count('project_task'))
+
+    return render(request, "show_task.html", {"tasks":tasks, "cnt_task":cnt_task, "projects":projects})

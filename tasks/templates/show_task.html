@@ -8,14 +8,22 @@
     <link rel="stylesheet" href="{% static "css/output.css" %}">
 </head>
 <body>
-    <p class="border-2 p-2 rounded-md w-full mr-2"></p>
     <div class="p-4">
-        {% for task in status %}
-            <p>{{task.title}}</p>
-            <span>{{task.status}}</span>
+        {% comment %}
+        {% for emp in tasks %}
+            <p>{{emp.name}}</p>
+            {% for tsk in emp.tasks.all %}
+                <li class="font-bold"> {{tsk.title}}</li>
+            {% endfor %}
         {% endfor %}
-        
+        {% endcomment %}
+
+        {% comment %} <p class="text-2lx">{{cnt_task.total_cnt}}</p> {% endcomment %}
+
+        {% for project in projects %}
+            <p>{{project.name}}</p>
+            <b>{{project.task_cnt}}</b>
+        {% endfor %}
     </div>
-    <p class="p-4">{{check}}</p>
 </body>
 </html>
