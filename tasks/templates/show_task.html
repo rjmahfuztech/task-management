@@ -9,15 +9,13 @@
 </head>
 <body>
     <p class="border-2 p-2 rounded-md w-full mr-2"></p>
-    <ul class="p-4">
-        {% for task in tasks %}
-            <li class="font-bold">id: {{task.id}} and status: {{task.status}}</li>
-            <li class="text-lg">{{task.title}}</li>
+    <div class="p-4">
+        {% for task in status %}
+            <p>{{task.title}}</p>
+            <span>{{task.status}}</span>
         {% endfor %}
-    </ul>
-    <div class="p-4 text-lg">
-        <p>{{task_specific.id}}</p>
-        <p>{{task_first.id}}</p>
+        
     </div>
+    <p class="p-4">{{check}}</p>
 </body>
 </html>
