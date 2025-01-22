@@ -1,15 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from tasks.forms import TaskForm,TaskModelForm
+from tasks.forms import TaskForm,TaskModelForm,TaskDetailsModelForm
 from tasks.models import Employee,Task,TaskDetails,Project
 from datetime import date
 from django.db.models import Q,Count
+from django.contrib import messages
 
 def manager_dashboard(request):
     # tasks = Task.objects.all() Not optimized query
-    tasks = Task.objects.select_related('details').prefetch_related('assigned_to').all() # optimized query
-    
-    # getting task count without optimized query
+    base_query = Task.objects.select_related('details').prefetch_related('assigned_to') # optimized query
+    type = request.GET.get('type', 'all')
+
+    # Retrieving data from dataBase depending on condition
+    if type == 'completed':
+        tasks = base_query.filter(status='COMPLETED')
+    elif type == 'in_progress':
+        tasks = base_query.filter(status='IN_PROGRESS')
+    elif type == 'pending':
+        tasks = base_query.filter(status='PENDING')
+    else:
+        tasks = base_query.all()
+
+    # getting tasks count without optimized query
     # total_task = tasks.count()
     # completed_task = Task.objects.filter(status="COMPLETED").count()
     # in_progress_task = Task.objects.filter(status="IN_PROGRESS").count()
@@ -42,17 +54,57 @@ def test(request):
 
 
 def create_task(request):
-    form = TaskModelForm() # for GET Request
+    task_form = TaskModelForm() # for GET Request
+    task_details_form = TaskDetailsModelForm()
+    
     if request.method == "POST":
-        form = TaskModelForm(request.POST)
-        if form.is_valid():
+        task_form = TaskModelForm(request.POST)
+        task_details_form = TaskDetailsModelForm(request.POST)
+
+        if task_form.is_valid() and task_details_form.is_valid():
             '''For Django Model Form'''
-            form.save()
+            task = task_form.save()
+            task_details = task_details_form.save(commit=False)
+            task_details.task = task
+            task_details.save()
             
-            return render(request, "task_form.html", {"form": form, "message":"Task Added Successful!"})
+            messages.success(request, "Task Created Successful!!")
+            return redirect('create-task')
             
-    context = {"form": form}
+    context = {"task_form": task_form, "task_details_form":task_details_form}
     return render(request, "task_form.html",context)
+
+def update_task(request, id):
+    task = Task.objects.get(id=id) # getting specific id for update
+    task_form = TaskModelForm(instance=task)
+    if task.details:
+        task_details_form = TaskDetailsModelForm(instance=task.details)
+    
+    if request.method == "POST":
+        task_form = TaskModelForm(request.POST, instance=task)
+        task_details_form = TaskDetailsModelForm(request.POST, instance=task.details)
+
+        if task_form.is_valid() and task_details_form.is_valid():
+            task = task_form.save()
+            task_details = task_details_form.save(commit=False)
+            task_details.task = task
+            task_details.save()
+            
+            messages.success(request, "Task Updated Successful!!")
+            return redirect('update-task', id)
+            
+    context = {"task_form": task_form, "task_details_form":task_details_form}
+    return render(request, "task_form.html",context)
+
+def delete_task(request, id):
+    task = Task.objects.get(id=id)
+    if request.method == "POST":
+        task.delete()
+        messages.success(request, "Task Deleted Successful!!")
+        return redirect('manager-dashboard')
+    else:
+        messages.error(request, "Something Went Wrong!!! Please Try again!")
+        return redirect('manager-dashboard')
 
 def view_task(request):
     """Retrieve data from Tasks"""

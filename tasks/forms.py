@@ -1,5 +1,5 @@
 from django import forms
-from tasks.models import Task
+from tasks.models import Task, TaskDetails
 
 class TaskForm(forms.Form):
     title = forms.CharField(max_length=250, label="Task Title")
@@ -28,7 +28,7 @@ class StyledFormMixin:
                 field.widget.attrs.update({
                     'class': f"{self.default_classes} resize-none",
                     'placeholder': f'Enter {field.label.lower()}',
-                    'rows': 7
+                    'rows': 5
                 })
             elif isinstance(field.widget, forms.SelectDateWidget):
                 field.widget.attrs.update({
@@ -37,6 +37,10 @@ class StyledFormMixin:
             elif isinstance(field.widget, forms.CheckboxSelectMultiple):
                 field.widget.attrs.update({
                     'class': 'space-y-2'
+                })
+            else:
+                field.widget.attrs.update({
+                    'class': self.default_classes
                 })
 
 
@@ -63,3 +67,13 @@ class TaskModelForm(StyledFormMixin,forms.ModelForm):
         super().__init__(*args,**kwargs)
         self.applyStyledWidget();
 
+
+class TaskDetailsModelForm(StyledFormMixin,forms.ModelForm):
+    class Meta:
+        model = TaskDetails
+        fields = ['priority', 'notes']
+
+    """Using Mixin Widget"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self.applyStyledWidget();
