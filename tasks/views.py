@@ -6,7 +6,20 @@ from datetime import date
 from django.db.models import Q,Count
 
 def manager_dashboard(request):
-    return render(request, "dashboard/manager-dashboard.html")
+    tasks = Task.objects.all()
+    total_task = tasks.count()
+    completed_task = Task.objects.filter(status="COMPLETED").count()
+    in_progress_task = Task.objects.filter(status="IN_PROGRESS").count()
+    pending_task = Task.objects.filter(status="PENDING").count()
+
+    context = {
+        'tasks':tasks,
+        'total_task': total_task,
+        'completed_task': completed_task,
+        'in_progress_task': in_progress_task,
+        'pending_task': pending_task 
+    }
+    return render(request, "dashboard/manager-dashboard.html",context)
 
 def user_dashboard(request):
     return render(request, "dashboard/user-dashboard.html")
@@ -36,7 +49,7 @@ def create_task(request):
 def view_task(request):
     """Retrieve data from Tasks"""
     # retrieve all tasks data
-    tasks = Task.objects.all()
+    # tasks = Task.objects.all()
     # retrieve specific single data
     task_specific = Task.objects.get(id=9)
     # retrieve first data
@@ -44,19 +57,19 @@ def view_task(request):
 
     """Filter data from Tasks"""
     # filter data depending on status
-    pending_task = Task.objects.filter(status="PENDING")
+    # pending_task = Task.objects.filter(status="PENDING")
     # show the task which due_data is Today
-    due_date = Task.objects.filter(due_date=date.today())
+    # due_date = Task.objects.filter(due_date=date.today())
     # show the all tasks which priority is not low
-    priority = TaskDetails.objects.exclude(priority="H")
+    # priority = TaskDetails.objects.exclude(priority="H")
     # show the task that contains specific word example: around
-    task_by_text = Task.objects.filter(title__icontains="around")
+    # task_by_text = Task.objects.filter(title__icontains="around")
     # show the task that contains specific word example: it and status: completed
-    task_by_text = Task.objects.filter(title__icontains="it", status="COMPLETED")
+    # task_by_text = Task.objects.filter(title__icontains="it", status="COMPLETED")
     # show the tasks which status pending or completed
-    status = Task.objects.filter(Q(status="PENDING") | Q(status="COMPLETED"))
+    # status = Task.objects.filter(Q(status="PENDING") | Q(status="COMPLETED"))
     # to check data available or not
-    check = Task.objects.filter(status="PENDING").exists()
+    # check = Task.objects.filter(status="PENDING").exists()
 
     """Related Data Queries [Advanced (select_related and prefetch_related)]"""
     '''(select_related) works on (ForeignKey, OneToOneField)'''
@@ -78,12 +91,27 @@ def view_task(request):
     # prefetch_related on Task
     # tasks = Task.objects.prefetch_related('assigned_to').all()
     # prefetch_related on Employee (Reverse Relation)
-    tasks = Employee.objects.prefetch_related('tasks').all()
+    # tasks = Employee.objects.prefetch_related('tasks').all()
 
     """Aggregate function query [Count,Avg,Max,Min,etc]"""
     # Count total task
-    cnt_task = Task.objects.aggregate(total_cnt=Count('id'))
+    # cnt_task = Task.objects.aggregate(total_cnt=Count('id'))
     # Count all tasks that available in a Project using (annotate)
-    projects = Project.objects.annotate(task_cnt=Count('project_task'))
+    # projects = Project.objects.annotate(task_cnt=Count('project_task'))
 
-    return render(request, "show_task.html", {"tasks":tasks, "cnt_task":cnt_task, "projects":projects})
+    # return render(request, "show_task.html", {"tasks":tasks, "cnt_task":cnt_task, "projects":projects})
+
+    # data = Task.objects.prefetch_related('assigned_to').all()
+
+    # specific_project = Project.objects.get(id=2)
+
+    # tasks1 = specific_project.project_task.all()
+
+    # employee = Employee.objects.filter(tasks__project=specific_project).distinct()
+
+    # all_task = TaskDetails.objects.exclude(priority='L').values()
+    all_task = Task.objects.select_related('details').exclude(details__priority='M')
+
+    
+
+    return render(request, "show_task.html", {"tasks": all_task})

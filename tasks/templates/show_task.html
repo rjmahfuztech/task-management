@@ -18,12 +18,16 @@
         {% endfor %}
         {% endcomment %}
 
-        {% comment %} <p class="text-2lx">{{cnt_task.total_cnt}}</p> {% endcomment %}
+        {% comment %} <p class="text-2lx">{{cnt_task.total_cnt}}</p> 
 
         {% for project in projects %}
             <p>{{project.name}}</p>
             <b>{{project.task_cnt}}</b>
         {% endfor %}
+        {% endcomment %}
+        <hr>
+        {% for task in tasks %} <li>{{task.id}} -- {{task.title}}</li> <p>{{task.details.priority}}</p>{% endfor %}
+        <hr>
     </div>
 </body>
 </html>
