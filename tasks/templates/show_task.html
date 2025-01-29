@@ -26,8 +26,10 @@
         {% endfor %}
         {% endcomment %}
         <hr>
-        {% for task in tasks %} <li>{{task.id}} -- {{task.title}}</li> <p>{{task.details.priority}}</p>{% endfor %}
-        <hr>
+        {% comment %} {% for task in tasks %} {% endcomment %}
+            <li>{{tasks.title}}</li>
+            <b>{{tasks.created_at}}</b>
+        {% comment %} {% endfor %} {% endcomment %}
     </div>
 </body>
 </html>

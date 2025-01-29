@@ -6,7 +6,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock title %}</title>
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/output.css' %}"> {% endcomment %}
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   </head>
   <body class="bg-slate-50">
     <div class="max-w-[1400px] mx-auto py-6 px-3">

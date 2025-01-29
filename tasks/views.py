@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from tasks.forms import TaskForm,TaskModelForm,TaskDetailsModelForm
 from tasks.models import Employee,Task,TaskDetails,Project
-from datetime import date
+from datetime import date, timedelta
 from django.db.models import Q,Count
 from django.contrib import messages
 
@@ -170,8 +170,17 @@ def view_task(request):
     # employee = Employee.objects.filter(tasks__project=specific_project).distinct()
 
     # all_task = TaskDetails.objects.exclude(priority='L').values()
-    all_task = Task.objects.select_related('details').exclude(details__priority='M')
+    # all_task = Task.objects.select_related('details').exclude(details__priority='L')
+    # all_task = Employee.objects.annotate(task_cnt=Count('tasks', filter=Q(tasks__status='COMPLETED'))).get(id=7)
+    # all_projects = Project.objects.filter(project_task=None)
+
+    # task_cnt_emp = Employee.objects.prefetch_related('tasks')
+    # emp_task = Employee.objects.annotate(total_cnt=Count('tasks'))
+    # tasks = Task.objects.filter(Q(status="COMPLETED") | Q(status="IN_PROGRESS"))
+    # tasks = Task.objects.filter(Q(status="COMPLETED") | Q(status="IN_PROGRESS"))
+    # tasks = Task.objects.filter(due_date__lt=date.today() - timedelta(days=7))
+    tasks = Task.objects.latest('created_at')
 
     
 
-    return render(request, "show_task.html", {"tasks": all_task})
+    return render(request, "show_task.html", {"tasks": tasks})

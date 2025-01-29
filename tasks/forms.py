@@ -15,7 +15,7 @@ class TaskForm(forms.Form):
 
 class StyledFormMixin:
     """Mixin to apply style to form field"""
-    default_classes = 'border-2 p-2 rounded-md w-full'
+    default_classes = 'border p-2 rounded-md w-full'
 
     def applyStyledWidget(self):
         for field_name,field in self.fields.items():
@@ -32,7 +32,7 @@ class StyledFormMixin:
                 })
             elif isinstance(field.widget, forms.SelectDateWidget):
                 field.widget.attrs.update({
-                    'class': 'border-2 p-2 rounded-md mr-2'
+                    'class': 'border p-2 rounded-md mr-2'
                 })
             elif isinstance(field.widget, forms.CheckboxSelectMultiple):
                 field.widget.attrs.update({
@@ -42,6 +42,11 @@ class StyledFormMixin:
                 field.widget.attrs.update({
                     'class': self.default_classes
                 })
+
+    """Using Mixin Widget"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args,**kwargs)
+        self.applyStyledWidget();
 
 
 class TaskModelForm(StyledFormMixin,forms.ModelForm):
@@ -60,20 +65,10 @@ class TaskModelForm(StyledFormMixin,forms.ModelForm):
         #     'description': forms.Textarea(attrs={'class':'border-2 p-2 rounded-md w-full'}),
         #     'due_date': forms.SelectDateWidget(attrs={'class':'border-2 p-2 rounded-md mr-2'}),
         #     'assigned_to': forms.CheckboxSelectMultiple
-        # }
-    
-    """Using Mixin Widget"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-        self.applyStyledWidget();
+        # }   
 
 
 class TaskDetailsModelForm(StyledFormMixin,forms.ModelForm):
     class Meta:
         model = TaskDetails
         fields = ['priority', 'notes']
-
-    """Using Mixin Widget"""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args,**kwargs)
-        self.applyStyledWidget();

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body class="max-w-[800px] mx-auto p-10">
+    <h1 class="text-center font-semibold text-2xl text-orange-300">Welcome to authentication system</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <p>
+                <label for="{{field.id_for_label}}">{{field.label}}</label>
+                {{field}}
+
+                {% if field.errors %}
+                    <ul>
+                        {% for error in field.errors %}
+                            <li>{{error}}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </p>
+        {% endfor %}
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <li>{{error}}</li>
+            {% endfor %}
+        {% endif %}
+        <button class="w-80 bg-black p-2 border rounded-md text-white mt-2" type="submit" value="Submit">Submit</button>
+    </form>
+</body>
+</html>
