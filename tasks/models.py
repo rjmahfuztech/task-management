@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import  post_save, pre_save, m2m_changed, post_delete
+from django.dispatch import receiver
+from django.core.mail import send_mail
 
 class Employee(models.Model):
     name = models.CharField(max_length=150)
@@ -45,7 +48,7 @@ class TaskDetails(models.Model):
         )
     task = models.OneToOneField(
         Task,
-        on_delete=models.CASCADE,
+        on_delete=models.DO_NOTHING,
         related_name='details'
     )
     # assigned_to = models.CharField(max_length=100)
@@ -63,3 +66,34 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+"""Django Signals"""
+
+# @receiver(pre_save, sender=Task)
+# def notify_task_creation(sender, instance, **kwargs):
+#     print('sender', sender)
+#     print('instance', instance)
+#     print('kwargs', kwargs)
+#     instance.is_completed = True
+
+@receiver(m2m_changed, sender=Task.assigned_to.through)
+def notify_employee_on_task_creation(sender, instance, action, **kwargs):
+    if action == 'post_add':
+        assigned_email = [emp.email for emp in instance.assigned_to.all()]
+        
+        send_mail(
+            "New Task Assigned",
+            f"You have been assigned to the task: {instance.title}",
+            "codrmahfuz@gmail.com",
+            assigned_email,
+        )
+
+
+@receiver(post_delete, sender=Task)
+def delete_associated_details(sender, instance, **kwargs):
+    if instance.details:
+        print(instance)
+        instance.details.delete()
+        print("deleted successful!")
+    
