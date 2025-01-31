@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 import re
 from tasks.forms import StyledFormMixin
 from django.contrib.auth.forms import AuthenticationForm
@@ -61,3 +61,10 @@ class CustomRegistrationForm(StyledFormMixin,forms.ModelForm):
 class LoginForm(StyledFormMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class AssignRoleForm(forms.Form):
+    role = forms.ModelChoiceField(
+         queryset=Group.objects.all(),
+         empty_label="Select a role"    
+    )

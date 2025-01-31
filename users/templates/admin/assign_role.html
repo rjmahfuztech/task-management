@@ -1,0 +1,9 @@
+{% extends "admin/dashboard.html" %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+        <button type="submit" class="p-2 w-80 bg-black text-white">Submit</button>
+    </form>
+{% endblock content %}
