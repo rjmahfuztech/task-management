@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import re
 from tasks.forms import StyledFormMixin
+from django.contrib.auth.forms import AuthenticationForm
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -17,11 +18,11 @@ class RegisterForm(UserCreationForm):
 
 
 class CustomRegistrationForm(StyledFormMixin,forms.ModelForm):
-    password1 = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput)
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'confirm_password']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'confirm_password']
     
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -33,25 +34,30 @@ class CustomRegistrationForm(StyledFormMixin,forms.ModelForm):
         return email
 
     def clean_password1(self): # field error
-        password1 = self.cleaned_data.get('password1')
+        password = self.cleaned_data.get('password')
         errors = []
 
-        if len(password1) < 8:
+        if len(password) < 8:
             errors.append('Password must be at least 8 character!')
-        if not (re.search(r'[A-Z]', password1) and re.search(r'[a-z]', password1) and re.search(r'[0-9]', password1) and re.search(r'[@#$%^&+=]', password1)):
+        if not (re.search(r'[A-Z]', password) and re.search(r'[a-z]', password) and re.search(r'[0-9]', password) and re.search(r'[@#$%^&+=]', password)):
             errors.append('Your password must have at least 1 uppercase, 1 lowercase, 1 number and a special character.')
 
         if errors:
             raise forms.ValidationError(errors)
         
-        return password1
+        return password
     
     def clean(self): # non field error
         cleaned_data = super().clean()
-        password1 = cleaned_data.get('password1')
+        password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
 
-        if password1 and confirm_password and password1 != confirm_password:
+        if password and confirm_password and password != confirm_password:
             raise forms.ValidationError('Password do not match!! Please correct it.')
         
         return cleaned_data
+    
+
+class LoginForm(StyledFormMixin, AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

@@ -7,17 +7,19 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 <body class="max-w-[800px] mx-auto p-10">
-    <h1 class="text-center font-semibold text-2xl text-orange-300">Welcome to authentication system</h1>
+    <h1 class="text-center font-semibold mb-6 text-2xl text-orange-300">Welcome to authentication system</h1>
+    <div>
+        {% if messages %}
+              {% for message in messages %}
+                <p class="px-2 py-3 text-white font-semibold text-center {% if message.tags == 'success' %}bg-green-400{% elif message.tags == 'error' %} bg-yellow-500{% endif %}">
+                  {{message}}
+                </p>
+              {% endfor %}
+          {% endif %}
+    </div>
     <form method="POST">
         {% csrf_token %}
-        <div>
-            <label for="user_id">Username</label>
-            <input class="w-full border border-e-black p-2 rounded-md" required placeholder="Enter username" type="text" name="username" id="user_id">
-        </div>
-        <div>
-            <label for="pass_id">Password</label>
-            <input class="w-full border border-e-black p-2 rounded-md" required placeholder="Enter password" type="password" name="password" id="pass_id">
-        </div>
+        {{ form }}
         <button class="w-80 bg-black p-2 border rounded-md text-white mt-2" type="submit" value="Submit">Submit</button>
     </form>
 </body>

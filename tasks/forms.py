@@ -30,6 +30,16 @@ class StyledFormMixin:
                     'placeholder': f'Enter {field.label.lower()}',
                     'rows': 5
                 })
+            elif isinstance(field.widget, forms.PasswordInput):
+                field.widget.attrs.update({
+                    'class': self.default_classes,
+                    'placeholder': f'Enter password'
+                })
+            elif isinstance(field.widget, forms.EmailInput):
+                field.widget.attrs.update({
+                    'class': self.default_classes,
+                    'placeholder': f'Enter {field.label.lower()}'
+                })
             elif isinstance(field.widget, forms.SelectDateWidget):
                 field.widget.attrs.update({
                     'class': 'border p-2 rounded-md mr-2'
