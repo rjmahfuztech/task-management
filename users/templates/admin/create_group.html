@@ -1,0 +1,37 @@
+{% extends "admin/dashboard.html" %}
+
+{% block content %}
+    <div class="max-w-[800px] mx-auto mt-10 px-4">
+        <div>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="px-2 py-1 mb-2 text-center {% if message.tags == 'success' %}bg-green-400{% endif %} ">{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+                <button type="button" id="select-all" class="px-2 py-1 rounded-md bg-black text-white">Select All</button>
+                <button type="button" id="deselect-all" class="px-2 py-1 rounded-md bg-black text-white">Deselect All</button>
+            {{form}}
+            <button type="submit" class="p-2 w-40 sm:w-80 mt-2 bg-black border rounded text-white">Create Group</button>
+        </form>
+    </div>
+
+    <script>
+        {% comment %} Select All  {% endcomment %}
+        document.getElementById('select-all').addEventListener('click', () => {
+            let checkBoxes = document.querySelectorAll('input[name="permissions"]');
+            checkBoxes.forEach((checkbox) => {
+                checkbox.checked = true;
+            });
+        });
+        {% comment %} Deselect All  {% endcomment %}
+        document.getElementById('deselect-all').addEventListener('click', () => {
+            let checkBoxes = document.querySelectorAll('input[name="permissions"]');
+            checkBoxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        });
+    </script>
+{% endblock content %}

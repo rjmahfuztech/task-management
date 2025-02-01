@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    {% comment %} <link rel="stylesheet" href="{% static 'css/output.css' %}" /> {% endcomment %}
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
   </head>
   <body>
     <header class="bg-white shadow-md">
@@ -25,7 +26,7 @@
               >Groups</a
             >
             <a
-              href="create-group.html"
+              href="{% url 'create-group' %}"
               class="text-gray-600 hover:text-gray-800"
               >Create Group</a
             >

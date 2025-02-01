@@ -1,9 +1,18 @@
 {% extends "admin/dashboard.html" %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{form}}
-        <button type="submit" class="p-2 w-80 bg-black text-white">Submit</button>
-    </form>
+    <div class="max-w-[800px] mx-auto mt-10 px-4">
+        <div>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="px-2 py-1 text-center {% if message.tags == 'success' %}bg-green-400{% endif %} ">{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            {{form}}
+            <button type="submit" class="p-2 w-40 sm:w-80 mt-2 bg-black border rounded text-white">Submit</button>
+        </form>
+    </div>
 {% endblock content %}
