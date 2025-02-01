@@ -11,10 +11,10 @@
         </div>
         <form method="POST">
             {% csrf_token %}
-                <button type="button" id="select-all" class="px-2 py-1 rounded-md bg-black text-white">Select All</button>
-                <button type="button" id="deselect-all" class="px-2 py-1 rounded-md bg-black text-white">Deselect All</button>
+                <button type="button" id="select-all" class="px-2 py-1 cursor-pointer rounded-md bg-black text-white">Select All</button>
+                <button type="button" id="deselect-all" class="px-2 py-1 cursor-pointer rounded-md bg-black text-white">Deselect All</button>
             {{form}}
-            <button type="submit" class="p-2 w-40 sm:w-80 mt-2 bg-black border rounded text-white">Create Group</button>
+            <button type="submit" class="p-2 w-40 sm:w-80 cursor-pointer mt-2 bg-black border rounded text-white">Create Group</button>
         </form>
     </div>
 

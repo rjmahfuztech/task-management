@@ -5,7 +5,17 @@ from tasks.models import Employee,Task,TaskDetails,Project
 from datetime import date, timedelta
 from django.db.models import Q,Count
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 
+# Test for manager
+def is_manager(user):
+    return user.groups.filter(name='Manager').exists()
+#Test for employee
+def is_employee(user):
+    return user.groups.filter(name='Employee').exists()
+
+
+@user_passes_test(is_manager, login_url='no-permission')
 def manager_dashboard(request):
     # tasks = Task.objects.all() Not optimized query
     base_query = Task.objects.select_related('details').prefetch_related('assigned_to') # optimized query
@@ -41,18 +51,12 @@ def manager_dashboard(request):
     }
     return render(request, "dashboard/manager-dashboard.html",context)
 
-def user_dashboard(request):
+@user_passes_test(is_employee, login_url='no-permission')
+def employee_dashboard(request):
     return render(request, "dashboard/user-dashboard.html")
 
-def test(request):
-    context = {
-            'name': 'mahfuz',
-            'age': 22,
-            'address': 'rajshahi'
-        }
-    return render(request, "test.html",context)
-
-
+@login_required
+@permission_required('tasks.add_task', login_url='no-permission')
 def create_task(request):
     task_form = TaskModelForm() # for GET Request
     task_details_form = TaskDetailsModelForm()
@@ -74,6 +78,9 @@ def create_task(request):
     context = {"task_form": task_form, "task_details_form":task_details_form}
     return render(request, "task_form.html",context)
 
+
+@login_required
+@permission_required('tasks.change_task', login_url='no-permission')
 def update_task(request, id):
     task = Task.objects.get(id=id) # getting specific id for update
     task_form = TaskModelForm(instance=task)
@@ -96,6 +103,9 @@ def update_task(request, id):
     context = {"task_form": task_form, "task_details_form":task_details_form}
     return render(request, "task_form.html",context)
 
+
+@login_required
+@permission_required('tasks.delete_task', login_url='no-permission')
 def delete_task(request, id):
     task = Task.objects.get(id=id)
     if request.method == "POST":
@@ -106,6 +116,8 @@ def delete_task(request, id):
         messages.error(request, "Something Went Wrong!!! Please Try again!")
         return redirect('manager-dashboard')
 
+@login_required
+@permission_required('tasks.view_task', login_url='no-permission')
 def view_task(request):
     """Retrieve data from Tasks"""
     # retrieve all tasks data
