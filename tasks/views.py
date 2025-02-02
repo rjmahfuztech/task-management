@@ -6,13 +6,14 @@ from datetime import date, timedelta
 from django.db.models import Q,Count
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from users.views import is_admin
 
 # Test for manager
 def is_manager(user):
-    return user.groups.filter(name='Admin').exists()
+    return user.groups.filter(name='Manager').exists()
 #Test for employee
 def is_employee(user):
-    return user.groups.filter(name='Admin').exists()
+    return user.groups.filter(name='Employee').exists()
 
 
 @user_passes_test(is_manager, login_url='no-permission')
@@ -183,3 +184,15 @@ def task_details(request, task_id):
         task.save()
 
     return render(request, "task_details.html", {"task": task, "status_choices": status_choices})
+
+
+@login_required
+def dashboard(request):
+    if is_admin(request.user):
+        return redirect('admin-dashboard')
+    elif is_manager(request.user):
+        return redirect('manager-dashboard')
+    elif is_employee(request.user):
+        return redirect('user-dashboard')
+    
+    return redirect('no-permission')
