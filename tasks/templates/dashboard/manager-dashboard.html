@@ -2,7 +2,7 @@
 {% block title %}Manager Dashboard{% endblock title %}
 {% block tasks %}
 
-<div class="bg-white rounded-xl shadow-sm border border-b border-gray-100 text-xs sm:text-sm text-gray-500 divide-y mt-9">
+<div class="bg-white rounded-xl shadow-sm border border-b border-gray-100 text-xs sm:text-sm text-gray-500 divide-y divide-slate-200  mt-9">
     {% comment %} Task table Title {% endcomment %}
     <div class="grid grid-cols-4 p-5">
       <div>TASK TITLE</div>
@@ -14,7 +14,7 @@
       <div class="grid grid-cols-4 gap-1 p-4 items-center">
         <div class="flex items-center">
           <div class="w-2 h-2 bg-green-600 rounded-full mr-2"></div>
-          <p>{{task.title}}</p>
+          <p><a href="{% url "task-details" task.id %}">{{task.title}}</a></p>
         </div>
         <div>
           <span
@@ -24,9 +24,9 @@
           </span>
         </div>
         <div class="flex -space-x-1 sm:-space-x-2">
-          {% for emp in task.assigned_to.all %}
+          {% for user in task.assigned_to.all %}
             <div class="w-5 h-5 sm:w-8 sm:h-8 flex justify-center items-center bg-blue-500 text-white rounded-full border-2 border-white">
-              {{emp.name|slice:":1"}}
+              {{user.first_name|slice:":1"}}
             </div>
           {% endfor %}
         </div>

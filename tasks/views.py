@@ -1,18 +1,18 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from tasks.forms import TaskForm,TaskModelForm,TaskDetailsModelForm
-from tasks.models import Employee,Task,TaskDetails,Project
-from datetime import date, timedelta
+from tasks.models import Task,TaskDetails,Project
+from datetime import date, timedelta 
 from django.db.models import Q,Count
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 
 # Test for manager
 def is_manager(user):
-    return user.groups.filter(name='Manager').exists()
+    return user.groups.filter(name='Admin').exists()
 #Test for employee
 def is_employee(user):
-    return user.groups.filter(name='Employee').exists()
+    return user.groups.filter(name='Admin').exists()
 
 
 @user_passes_test(is_manager, login_url='no-permission')
@@ -161,38 +161,20 @@ def view_task(request):
     '''ManyToManyField'''
     # between (Task and Employee)
     # prefetch_related on Task
-    # tasks = Task.objects.prefetch_related('assigned_to').all()
+    tasks = Task.objects.prefetch_related('assigned_to').all()
     # prefetch_related on Employee (Reverse Relation)
     # tasks = Employee.objects.prefetch_related('tasks').all()
 
     """Aggregate function query [Count,Avg,Max,Min,etc]"""
     # Count total task
-    # cnt_task = Task.objects.aggregate(total_cnt=Count('id'))
+    cnt_task = Task.objects.aggregate(total_cnt=Count('id'))
     # Count all tasks that available in a Project using (annotate)
-    # projects = Project.objects.annotate(task_cnt=Count('project_task'))
+    projects = Project.objects.annotate(task_cnt=Count('project_task'))
 
-    # return render(request, "show_task.html", {"tasks":tasks, "cnt_task":cnt_task, "projects":projects})
+    return render(request, "show_task.html", {"tasks":tasks, "cnt_task":cnt_task, "projects":projects})
 
-    # data = Task.objects.prefetch_related('assigned_to').all()
 
-    # specific_project = Project.objects.get(id=2)
+def task_details(request, task_id):
+    task = Task.objects.select_related('details').get(id=task_id)
 
-    # tasks1 = specific_project.project_task.all()
-
-    # employee = Employee.objects.filter(tasks__project=specific_project).distinct()
-
-    # all_task = TaskDetails.objects.exclude(priority='L').values()
-    # all_task = Task.objects.select_related('details').exclude(details__priority='L')
-    # all_task = Employee.objects.annotate(task_cnt=Count('tasks', filter=Q(tasks__status='COMPLETED'))).get(id=7)
-    # all_projects = Project.objects.filter(project_task=None)
-
-    # task_cnt_emp = Employee.objects.prefetch_related('tasks')
-    # emp_task = Employee.objects.annotate(total_cnt=Count('tasks'))
-    # tasks = Task.objects.filter(Q(status="COMPLETED") | Q(status="IN_PROGRESS"))
-    # tasks = Task.objects.filter(Q(status="COMPLETED") | Q(status="IN_PROGRESS"))
-    # tasks = Task.objects.filter(due_date__lt=date.today() - timedelta(days=7))
-    tasks = Task.objects.latest('created_at')
-
-    
-
-    return render(request, "show_task.html", {"tasks": tasks})
+    return render(request, "task_details.html", {"task": task})
