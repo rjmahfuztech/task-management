@@ -176,5 +176,10 @@ def view_task(request):
 
 def task_details(request, task_id):
     task = Task.objects.select_related('details').get(id=task_id)
+    status_choices = Task.STATUS_CHOICES
+    if request.method == 'POST':
+        change_status = request.POST.get('task_status')
+        task.status = change_status
+        task.save()
 
-    return render(request, "task_details.html", {"task": task})
+    return render(request, "task_details.html", {"task": task, "status_choices": status_choices})
