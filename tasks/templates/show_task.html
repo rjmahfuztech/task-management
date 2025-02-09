@@ -18,18 +18,14 @@
         {% endfor %}
         {% endcomment %}
 
-        {% comment %} <p class="text-2lx">{{cnt_task.total_cnt}}</p> 
+        <p class="text-2lx">{{cnt_task.total_cnt}}</p> 
 
         {% for project in projects %}
             <p>{{project.name}}</p>
             <b>{{project.task_cnt}}</b>
         {% endfor %}
-        {% endcomment %}
-        <hr>
-        {% comment %} {% for task in tasks %} {% endcomment %}
-            <li>{{tasks.title}}</li>
-            <b>{{tasks.created_at}}</b>
-        {% comment %} {% endfor %} {% endcomment %}
+        
+
     </div>
 </body>
 </html>
