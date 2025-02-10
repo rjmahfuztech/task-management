@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Prefetch
+from django.contrib.auth.views import LoginView
+from django.views.generic import TemplateView
 
 # Test for users
 def is_admin(user):
@@ -40,6 +42,13 @@ def sign_in(request):
 
     return render(request, "registration/login.html", {"form": form})
 
+class CustomLoginView(LoginView):
+    form_class = LoginForm
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        return next_url if next_url else super().get_success_url()
+
 @login_required
 def sign_out(request):
     if request.method == 'POST':
@@ -53,7 +62,8 @@ def activate_user(request, user_id, token):
         user.is_active = True
         user.save()
         return redirect('sign-in')
-    
+
+@login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def admin_dashboard(request):
     users = User.objects.prefetch_related(
@@ -67,6 +77,7 @@ def admin_dashboard(request):
     return render(request, "admin/dashboard.html", {"users": users})
 
 
+@login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def assign_role(request, user_id):
     user = User.objects.get(id=user_id)
@@ -84,6 +95,7 @@ def assign_role(request, user_id):
     return render(request, "admin/assign_role.html", {"form": form})
 
 
+@login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def create_group(request):
     form = CreateGroupForm()
@@ -96,7 +108,23 @@ def create_group(request):
         
     return render(request, "admin/create_group.html", {"form": form})
 
+@login_required
 @user_passes_test(is_admin, login_url='no-permission')
 def group_list(request):
     groups = Group.objects.prefetch_related('permissions').all()
     return render(request, "admin/group_list.html", {"groups": groups})
+
+# User Profile
+class ProfileView(TemplateView):
+    template_name = 'accounts/profile.html'
+    
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        context = super().get_context_data(**kwargs)
+        context['name'] = user.get_full_name()
+        context['username'] = user.username
+        context['email'] = user.email
+        context['last_login'] = user.last_login
+        context['member_since'] = user.date_joined
+
+        return context
