@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from users.forms import CustomRegistrationForm, LoginForm, AssignRoleForm, CreateGroupForm, CustomPasswordChangeForm, CustomPasswordResetForm, CustomPasswordResetConfirmForm, EditProfileForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -9,8 +9,7 @@ from django.db.models import Prefetch
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetConfirmView
 from django.views.generic import TemplateView, UpdateView
 from django.urls import reverse_lazy
-from users.models import UserProfile
-
+User = get_user_model()
 # Test for users
 def is_admin(user):
     return user.groups.filter(name='Admin').exists()
@@ -155,14 +154,15 @@ class ProfileView(TemplateView):
         context['name'] = user.get_full_name()
         context['username'] = user.username
         context['email'] = user.email
-        context['bio'] = user.userprofile.bio
-        context['profile_image'] = user.userprofile.profile_image
+        context['bio'] = user.bio
+        context['profile_image'] = user.profile_image
         context['last_login'] = user.last_login
         context['member_since'] = user.date_joined
 
         return context
     
 # Edit UserProfile Info
+'''
 class EditProfileView(UpdateView):
     model = User
     form_class = EditProfileForm
@@ -186,4 +186,17 @@ class EditProfileView(UpdateView):
     def form_valid(self, form):
         form.save(commit=True)
         return redirect('profile')
+'''
+
+class EditProfileView(UpdateView):
+    model = User
+    form_class = EditProfileForm
+    context_object_name = 'form'
+    template_name = 'accounts/update_profile.html'
+
+    def get_object(self):
+        return self.request.user
     
+    def form_valid(self, form):
+        form.save()
+        return redirect('profile')

@@ -1,9 +1,12 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm 
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import Group, Permission
 import re
 from tasks.forms import StyledFormMixin
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -72,6 +75,8 @@ class CustomPasswordResetForm(StyledFormMixin, PasswordResetForm):
 class CustomPasswordResetConfirmForm(StyledFormMixin, SetPasswordForm):
     pass
 
+# Added Extra fields with User Model
+'''
 class EditProfileForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = User
@@ -104,6 +109,13 @@ class EditProfileForm(StyledFormMixin, forms.ModelForm):
             user.save()
 
         return user
+'''
+
+class EditProfileForm(StyledFormMixin,forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'bio', 'profile_image']
+
 
 class AssignRoleForm(StyledFormMixin,forms.Form):
     role = forms.ModelChoiceField(
