@@ -2,13 +2,6 @@
 
 {% block content %}
     <div class="max-w-[800px] mx-auto mt-10 px-4">
-        <div>
-            {% if messages %}
-                {% for message in messages %}
-                    <p class="px-2 py-1 text-center {% if message.tags == 'success' %}bg-green-400{% endif %} ">{{message}}</p>
-                {% endfor %}
-            {% endif %}
-        </div>
         <form method="POST">
             {% csrf_token %}
             {{form}}
